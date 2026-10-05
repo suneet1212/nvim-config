@@ -1,3 +1,21 @@
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function (event)
+        local map = function (keys, func, desc)
+            vim.keymap.set("n", keys, func, {
+                buffer = event.buf,
+                desc = "Lsp: " .. desc,
+            })
+        end
+
+        map("gd", vim.lsp.buf.definition, "Go to definition")
+        map("gD", vim.lsp.buf.declaration, "Go to declaration")
+        map("gr", "<cmd>Telescope lsp_references<cr>", "References")
+        map("K", vim.lsp.buf.hover, "Hover Documentation")
+
+        map("<leader>rn", vim.lsp.buf.rename, "Rename")
+        map("<leader>ca", vim.lsp.buf.code_action, "Code action")
+    end
+})
 return {
     {
         "neovim/nvim-lspconfig",
@@ -16,7 +34,11 @@ return {
     },
     {
         "mason-org/mason-lspconfig.nvim",
-        opts = {},
+        opts = {
+            automatic_enable = {
+                exclude = { "jdtls" },
+            }
+        },
         dependencies = {
             { "mason-org/mason.nvim", opts = {} },
             "neovim/nvim-lspconfig",
@@ -24,6 +46,76 @@ return {
     },
     {
         "mfussenegger/nvim-jdtls",
+        ft = 'java',
+        config = function ()
+            local jdtls = require("jdtls")
+            local function split(inputstr, sep)
+                if sep == nil then
+                    sep = "%s"
+                end
+                local t = {}
+                for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+                    table.insert(t, str)
+                end
+                return t
+            end
+            local os_name = vim.uv.os_uname().sysname
+            local versions = {}
+            local maxVer = 0
+            if os_name == "Linux" then
+                local java_versions = vim.trim(vim.fn.system("update-java-alternatives --list"))
+                local t = split(java_versions)
+                for i = 1, #t/3 do
+                    local ver = tonumber(string.sub(t[3*i-1], 1, 3))
+                    if(ver ~= nil) then
+                        if(ver == 108) then
+                            ver = 1.8
+                        else
+                            ver = math.floor(ver/10)
+                        end
+                        versions[ver] = t[3*i]
+                        if(ver >= 21 and ver > maxVer) then
+                            maxVer = ver
+                        end
+                    end
+                end
+            elseif os_name == "Darwin" then
+                print("Need to complete the jdtls setup for mac. For now default version >= 21 is required")
+            end
+            if maxVer == 0 then
+                print("There is no java version greater than 21, jdtls would fail to start")
+            end
+            local runtimesConfig = {}
+            for key, value in pairs(versions) do
+                table.insert(runtimesConfig, {
+                    name = "JavaSE-"..key,
+                    path = value
+                })
+            end
+            local jdtls_group = vim.api.nvim_create_augroup("jdtls_setup", { clear = true })
+            vim.api.nvim_create_autocmd("FileType", {
+                group = jdtls_group,
+                pattern = "java",
+                callback = function ()
+                    local config = {
+                        cmd = {
+                            "jdtls",
+                            "--java-executable=" .. versions[maxVer] .. "/bin/java",
+                        },
+                        root_dir = jdtls.setup.find_root({ ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" }),
+                        settings = {
+                            java = {
+                                configuration = {
+                                    runtimes = runtimesConfig
+                                }
+                            }
+                        }
+                    }
+                    jdtls.start_or_attach(config)
+                end
+            })
+            vim.cmd("doautocmd FileType java")
+        end
     },
     {
         "folke/lazydev.nvim",

@@ -33,6 +33,6 @@ require("lazy").setup({
   -- automatically check for plugin updates
   checker = {
       enabled = true,
-      frequency = 86400,
+      frequency = 604800,
   },
 })

@@ -3,6 +3,6 @@ return {
     lazy = false,
     build = ':TSUpdate',
     config = function ()
-        require('nvim-treesitter').install { 'lua', 'java', 'go', 'python', 'drool' }
+        require('nvim-treesitter').install { 'lua', 'java', 'go', 'python'}
     end
 }
