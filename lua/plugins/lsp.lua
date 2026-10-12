@@ -1,6 +1,6 @@
 vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function (event)
-        local map = function (keys, func, desc)
+    callback = function(event)
+        local map = function(keys, func, desc)
             vim.keymap.set("n", keys, func, {
                 buffer = event.buf,
                 desc = "Lsp: " .. desc,
@@ -14,7 +14,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
         map("<leader>rn", vim.lsp.buf.rename, "Rename")
         map("<leader>ca", vim.lsp.buf.code_action, "Code action")
-    end
+    end,
 })
 return {
     {
@@ -27,9 +27,9 @@ return {
                 icons = {
                     package_installed = "✓",
                     package_pending = "➜",
-                    package_uninstalled = "✗"
-                }
-            }
+                    package_uninstalled = "✗",
+                },
+            },
         },
     },
     {
@@ -37,7 +37,7 @@ return {
         opts = {
             automatic_enable = {
                 exclude = { "jdtls" },
-            }
+            },
         },
         dependencies = {
             { "mason-org/mason.nvim", opts = {} },
@@ -46,15 +46,15 @@ return {
     },
     {
         "mfussenegger/nvim-jdtls",
-        ft = 'java',
-        config = function ()
+        ft = "java",
+        config = function()
             local jdtls = require("jdtls")
             local function split(inputstr, sep)
                 if sep == nil then
                     sep = "%s"
                 end
                 local t = {}
-                for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+                for str in string.gmatch(inputstr, "([^" .. sep .. "]+)") do
                     table.insert(t, str)
                 end
                 return t
@@ -65,16 +65,16 @@ return {
             if os_name == "Linux" then
                 local java_versions = vim.trim(vim.fn.system("update-java-alternatives --list"))
                 local t = split(java_versions)
-                for i = 1, #t/3 do
-                    local ver = tonumber(string.sub(t[3*i-1], 1, 3))
-                    if(ver ~= nil) then
-                        if(ver == 108) then
+                for i = 1, #t / 3 do
+                    local ver = tonumber(string.sub(t[3 * i - 1], 1, 3))
+                    if ver ~= nil then
+                        if ver == 108 then
                             ver = 1.8
                         else
-                            ver = math.floor(ver/10)
+                            ver = math.floor(ver / 10)
                         end
-                        versions[ver] = t[3*i]
-                        if(ver >= 21 and ver > maxVer) then
+                        versions[ver] = t[3 * i]
+                        if ver >= 21 and ver > maxVer then
                             maxVer = ver
                         end
                     end
@@ -88,15 +88,15 @@ return {
             local runtimesConfig = {}
             for key, value in pairs(versions) do
                 table.insert(runtimesConfig, {
-                    name = "JavaSE-"..key,
-                    path = value
+                    name = "JavaSE-" .. key,
+                    path = value,
                 })
             end
             local jdtls_group = vim.api.nvim_create_augroup("jdtls_setup", { clear = true })
             vim.api.nvim_create_autocmd("FileType", {
                 group = jdtls_group,
                 pattern = "java",
-                callback = function ()
+                callback = function()
                     local config = {
                         cmd = {
                             "jdtls",
@@ -106,16 +106,16 @@ return {
                         settings = {
                             java = {
                                 configuration = {
-                                    runtimes = runtimesConfig
-                                }
-                            }
-                        }
+                                    runtimes = runtimesConfig,
+                                },
+                            },
+                        },
                     }
                     jdtls.start_or_attach(config)
-                end
+                end,
             })
             vim.cmd("doautocmd FileType java")
-        end
+        end,
     },
     {
         "folke/lazydev.nvim",
@@ -140,7 +140,7 @@ return {
     },
     { -- optional blink completion source for require statements and module annotations
         "saghen/blink.cmp",
-        version = '1.*',
+        version = "1.*",
         opts = {
             sources = {
                 -- add lazydev to your completion providers
@@ -154,7 +154,8 @@ return {
                     },
                 },
             },
+            signature = { enabled = true },
         },
-    }
+    },
     -- { "folke/neodev.nvim", enabled = false }, -- make sure to uninstall or disable neodev.nvim
 }

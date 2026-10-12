@@ -7,7 +7,9 @@ vim.api.nvim_create_autocmd("TextYankPost", {
         vim.highlight.on_yank()
     end,
 })
+
 vim.api.nvim_create_autocmd("LspAttach", {
+    desc = "Auto-format (lsp) on save",
     group = vim.api.nvim_create_augroup("my.lsp", {}),
     callback = function(args)
         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
@@ -30,5 +32,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 end,
             })
         end
+    end,
+})
+
+-- Terminal Autocmds
+vim.api.nvim_create_autocmd("TermOpen", {
+    group = vim.api.nvim_create_augroup("custom-term-open", { clear = true }),
+    callback = function()
+        vim.opt.number = false
+        vim.opt.relativenumber = false
     end,
 })
