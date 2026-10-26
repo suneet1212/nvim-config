@@ -19,6 +19,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
 return {
     {
         "neovim/nvim-lspconfig",
+        dependencies = {
+            {
+                "j-hui/fidget.nvim",
+                opts = {},
+            },
+        },
     },
     {
         "mason-org/mason.nvim",
@@ -80,7 +86,17 @@ return {
                     end
                 end
             elseif os_name == "Darwin" then
-                print("Need to complete the jdtls setup for mac. For now default version >= 21 is required")
+                local java_versions = vim.trim(vim.fn.system("/usr/libexec/java_home - V 2>&1 | sed '1d;$d'"))
+                local t = split(java_versions)
+                for i = 1, #t / 7 do
+                    local ver = tonumber(string.sub(t[7 * (i - 1) + 1], 1, 3))
+                    if ver ~= nil then
+                        versions[ver] = t[7 * i]
+                        if ver >= 21 and ver > maxVer then
+                            maxVer = ver
+                        end
+                    end
+                end
             end
             if maxVer == 0 then
                 print("There is no java version greater than 21, jdtls would fail to start")

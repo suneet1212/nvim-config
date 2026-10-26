@@ -20,3 +20,5 @@ vim.keymap.set("n", "<M-k>", "<cmd>cprev<CR>", { desc = "quickfix prev" })
 
 vim.keymap.set("n", "<C-/>", "gcc", { desc = "toggle comment", remap = true })
 vim.keymap.set("v", "<C-/>", "gc", { desc = "toggle comment", remap = true })
+
+vim.keymap.set("n", "<leader>q", ":bprevious | bdelete! #<CR>", { silent = true })

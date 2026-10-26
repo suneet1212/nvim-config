@@ -31,6 +31,9 @@ local function createTerminal(opts)
 
     vim.api.nvim_win_set_buf(win, buf)
     vim.api.nvim_win_set_height(win, height)
+    vim.api.nvim_set_option_value("winfixheight", true, {
+        win = win,
+    })
     if vim.bo.buftype ~= "terminal" then
         vim.cmd.term()
     end
@@ -48,5 +51,5 @@ vim.api.nvim_create_user_command("CustTerminal", function()
     end
 end, {})
 
-vim.keymap.set({ "n", "t" }, "<leader>t", "<cmd>CustTerminal<CR>", { desc = "Toggle Terminal" })
+vim.keymap.set({ "n", "t" }, "<C-j>", "<cmd>CustTerminal<CR>", { desc = "Toggle Terminal" })
 vim.keymap.set("t", "<esc><esc>", "<C-\\><C-n>", { desc = "Terminal go to normal mode" })

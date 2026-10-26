@@ -24,5 +24,6 @@ return { -- Adds git related signs to the gutter, as well as utilities for manag
         count_chars = {},
         numhl = false,
         linehl = false,
+        current_line_blame = true,
     },
 }

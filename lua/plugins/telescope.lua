@@ -9,7 +9,11 @@ return {
     config = function()
         require("telescope").setup({
             pickers = {
-                find_files = {},
+                find_files = {
+                    file_ignore_patterns = {
+                        "target/",
+                    },
+                },
                 diagnostics = {
                     theme = "ivy",
                 },

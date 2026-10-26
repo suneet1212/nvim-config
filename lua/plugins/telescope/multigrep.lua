@@ -13,7 +13,6 @@ local live_multigrep = function(opts)
             if not prompt or prompt == "" then
                 return nil
             end
-            print("found a valid prompt")
             local pieces = vim.split(prompt, "  ")
             local args = { "rg" }
             if pieces[1] then
