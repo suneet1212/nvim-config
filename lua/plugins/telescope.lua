@@ -12,7 +12,10 @@ return {
                 find_files = {
                     file_ignore_patterns = {
                         "target/",
+                        ".venv/",
+                        ".git/",
                     },
+                    hidden = true,
                 },
                 diagnostics = {
                     theme = "ivy",
